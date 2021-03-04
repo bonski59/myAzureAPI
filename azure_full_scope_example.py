@@ -1,5 +1,5 @@
 import os, ntpath
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobServiceClient
 from configparser import ConfigParser
 
 # make config file variables
