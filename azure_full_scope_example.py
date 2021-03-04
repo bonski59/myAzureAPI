@@ -1,6 +1,10 @@
 import os, ntpath
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, BlobSasPermissions, generate_blob_sas
+from azure.storage.blob.blockblobservice import BlockBlobService
 from configparser import ConfigParser
+import pandas as pd
+from io import StringIO
+
 
 # make config file variables
 config_file = r".\config.ini"
@@ -28,6 +32,7 @@ class azureDevTools:
     container_name = config['azure']['container']
 
     # Create the BlobServiceClient object which will be used to create a container client
+    block_blob_service = BlockBlobService(connection_string=connect_str)
     blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 
     # get existing container
@@ -111,7 +116,7 @@ class azureDevTools:
             cls.container_client.delete_container()
 
     @classmethod
-    def delete_blob(cls, blob_names):
+    def delete_blobs(cls, blob_names):
         if not type(blob_names) == list:
             blob_names = [blob_names]
         for i in blob_names:
@@ -137,7 +142,23 @@ class azureDevTools:
             print('\t Exception: dev_download()')
             print("\t " + str(xx))
 
+    # TODO: build read functions for xl, csv, and txt
+
+    @classmethod
+    def read_txt(cls, cloud_txt):
+
+        # read the content of the blob(assume it's a .txt file)
+        str1 = cls.block_blob_service.get_blob_to_text(cls.container_name, cloud_txt)
+        # split the string str1 with newline.
+        arr1 = str1.content.splitlines()
+        # read the one line each time.
+        for a1 in arr1:
+            print(a1)
+
+    @classmethod
+    def read_csv(cls, cloud_csv):
+        blob_string = cls.block_blob_service.get_blob_to_text(cls.container_name, cloud_csv).content
+        df = pd.read_csv(StringIO(blob_string))
+        return df
 
 
-# testing
-# azureDevTools.dev_mk_txt_file("potato3")
