@@ -1,13 +1,29 @@
 import os, ntpath
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, blockblobservice
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from configparser import ConfigParser
 
+# make config file variables
 config_file = r".\config.ini"
 config = ConfigParser()
 config.read(config_file)
 
+# initialize temp folders
+if __name__ == "__main__":
+    download = r".\download"
+    upload = r".\upload"
+
+    def mk_dir(dir):
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+        return
+
+    mk_dir(download)
+    mk_dir(upload)
+
+# build class for dev tools
 class azureDevTools:
-    
+
+    # pull credentials from config file
     connect_str = config['azure']['connect_str']
     container_name = config['azure']['container']
 
